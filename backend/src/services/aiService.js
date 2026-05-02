@@ -1,12 +1,14 @@
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import { ChatMistralAI } from "@langchain/mistralai";
+import config from '../config/config.js';
 
 dotenv.config();
 
-const openai = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
-  baseURL: 'https://api.groq.com/openai/v1',
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.GROQ_API_KEY,
+//   baseURL: 'https://api.groq.com/openai/v1',
+// });
 
 export const generateReply = async (messages, businessData, userName) => {
   try {
@@ -68,3 +70,36 @@ Guidelines:
 
 
 
+const mistralModel = new ChatMistralAI({
+  model : "mistral-small-latest", 
+  apiKey : config.MISTRAL_API_KEY,
+})
+
+
+const messages = [
+  {
+    role : "human",
+    content: "can i use you for my project"
+  }
+]
+
+const chatWithAi = async (messages)=>{
+  try{
+
+    const response = await mistralModel.invoke(messages)
+    messages.push({
+      role : "AI", 
+      content : response.content
+    })
+    return response.content
+  }catch(err){
+    console.log(err)
+  }
+}
+
+
+
+
+const response = await chatWithAi(messages)
+
+console.log(response)
